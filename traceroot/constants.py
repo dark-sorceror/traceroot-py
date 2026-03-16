@@ -5,6 +5,7 @@ tracer identification, and type definitions.
 """
 
 import enum
+import importlib.metadata
 
 # =============================================================================
 # SDK Identification
@@ -16,8 +17,8 @@ TRACEROOT_TRACER_NAME = "traceroot-sdk"
 SDK_NAME = "traceroot-python"
 """SDK name for identification in API requests."""
 
-SDK_VERSION = "0.1.0"
-"""SDK version. Should match pyproject.toml version."""
+SDK_VERSION = importlib.metadata.version("traceroot")
+"""SDK version. Read from package metadata (pyproject.toml)."""
 
 # =============================================================================
 # Default Values
