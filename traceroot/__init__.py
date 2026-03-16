@@ -32,7 +32,7 @@ from traceroot.decorators import observe
 from traceroot.instrumentation import Integration
 from traceroot.update import update_current_span, update_current_trace
 
-__version__ = "0.1.0"
+from traceroot.constants import SDK_VERSION as __version__
 
 # =============================================================================
 # Global Singleton Client
@@ -125,6 +125,7 @@ def shutdown() -> None:
 __all__ = [
     # Core
     "initialize",
+    "get_client",
     "flush",
     "shutdown",
     "observe",
