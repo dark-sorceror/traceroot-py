@@ -333,9 +333,7 @@ def test_update_current_span_metadata(memory_exporter):
 
     @observe(name="span-with-metadata")
     def func_with_metadata():
-        traceroot.update_current_span(
-            metadata={"custom_key": "custom_value", "score": 0.95}
-        )
+        traceroot.update_current_span(metadata={"custom_key": "custom_value", "score": 0.95})
         return "done"
 
     func_with_metadata()
@@ -408,8 +406,7 @@ async def test_async_span_hierarchy(memory_exporter):
 
     spans_by_name = get_spans_by_name(memory_exporter)
     assert (
-        spans_by_name["async-child"].parent.span_id
-        == spans_by_name["async-parent"].context.span_id
+        spans_by_name["async-child"].parent.span_id == spans_by_name["async-parent"].context.span_id
     )
 
 

@@ -27,12 +27,11 @@ Session Management:
 from openinference.instrumentation import using_attributes
 
 from traceroot.client import TracerootClient
+from traceroot.constants import SDK_VERSION as __version__
 from traceroot.context import get_current_span_id, get_current_trace_id
 from traceroot.decorators import observe
 from traceroot.instrumentation import Integration
 from traceroot.update import update_current_span, update_current_trace
-
-from traceroot.constants import SDK_VERSION as __version__
 
 # =============================================================================
 # Global Singleton Client

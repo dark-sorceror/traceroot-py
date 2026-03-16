@@ -79,8 +79,7 @@ def observe(
     except ValueError:
         valid = ", ".join(m.value for m in SpanKind)
         logger.warning(
-            f"Invalid span kind '{type}'. Valid kinds"
-            f" are: {valid}. Defaulting to 'span'."
+            f"Invalid span kind '{type}'. Valid kinds are: {valid}. Defaulting to 'span'."
         )
         validated_kind = SpanKind.SPAN
 
@@ -160,9 +159,7 @@ def _set_source_and_git_context(span: trace.Span) -> None:
     if source.get("git_source_line"):
         span.set_attribute(SpanAttributes.GIT_SOURCE_LINE, source["git_source_line"])
     if source.get("git_source_function"):
-        span.set_attribute(
-            SpanAttributes.GIT_SOURCE_FUNCTION, source["git_source_function"]
-        )
+        span.set_attribute(SpanAttributes.GIT_SOURCE_FUNCTION, source["git_source_function"])
 
     from traceroot import get_client
 
@@ -226,8 +223,4 @@ def _capture_args(args: tuple, kwargs: dict, func: Callable) -> dict[str, Any]:
     bound = sig.bind(*args, **kwargs)
     bound.apply_defaults()
     # Filter out 'self' and 'cls' to avoid capturing instance/class references
-    return {
-        k: serialize_value(v)
-        for k, v in bound.arguments.items()
-        if k not in ("self", "cls")
-    }
+    return {k: serialize_value(v) for k, v in bound.arguments.items() if k not in ("self", "cls")}

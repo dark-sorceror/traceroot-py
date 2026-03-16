@@ -238,9 +238,7 @@ class TestMockMessage:
             def __init__(self, content, tool_calls):
                 self.content = content
                 self.tool_calls = (
-                    [MockToolCall(tc) for tc in tool_calls.values()]
-                    if tool_calls
-                    else None
+                    [MockToolCall(tc) for tc in tool_calls.values()] if tool_calls else None
                 )
 
         return MockMessage(content, tool_calls)

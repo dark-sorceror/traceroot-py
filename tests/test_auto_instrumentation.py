@@ -147,9 +147,7 @@ def test_client_calls_initialize_integrations(mock_set_provider, mock_init):
 def test_client_skips_instrumentation_when_not_requested(mock_set_provider):
     reset_traceroot()
 
-    with patch(
-        "traceroot.instrumentation.registry.initialize_integrations"
-    ) as mock_init:
+    with patch("traceroot.instrumentation.registry.initialize_integrations") as mock_init:
         traceroot.initialize(api_key="test-key")
         mock_init.assert_not_called()
 
@@ -157,8 +155,6 @@ def test_client_skips_instrumentation_when_not_requested(mock_set_provider):
 def test_client_skips_instrumentation_when_disabled():
     reset_traceroot()
 
-    with patch(
-        "traceroot.instrumentation.registry.initialize_integrations"
-    ) as mock_init:
+    with patch("traceroot.instrumentation.registry.initialize_integrations") as mock_init:
         traceroot.initialize(enabled=False, integrations=[Integration.OPENAI])
         mock_init.assert_not_called()

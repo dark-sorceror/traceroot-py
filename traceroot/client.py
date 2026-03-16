@@ -80,9 +80,7 @@ class TracerootClient:
 
         if flush_interval is None:
             env_interval = os.environ.get(TRACEROOT_FLUSH_INTERVAL)
-            flush_interval = (
-                float(env_interval) if env_interval else DEFAULT_FLUSH_INTERVAL
-            )
+            flush_interval = float(env_interval) if env_interval else DEFAULT_FLUSH_INTERVAL
         self.flush_interval = flush_interval
 
         if batch_size is None:
@@ -97,20 +95,14 @@ class TracerootClient:
 
         if enabled is None:
             env_enabled = os.environ.get(TRACEROOT_ENABLED, "").lower()
-            enabled = (
-                env_enabled not in ("false", "0", "no", "off") if env_enabled else True
-            )
+            enabled = env_enabled not in ("false", "0", "no", "off") if env_enabled else True
 
         self._integrations = integrations
 
         # Resolve git context (explicit > env var > auto-detect)
         git_ctx = auto_detect_git_context()
-        self.git_repo = (
-            git_repo or os.environ.get("TRACEROOT_GIT_REPO") or git_ctx.get("git_repo")
-        )
-        self.git_ref = (
-            git_ref or os.environ.get("TRACEROOT_GIT_REF") or git_ctx.get("git_ref")
-        )
+        self.git_repo = git_repo or os.environ.get("TRACEROOT_GIT_REPO") or git_ctx.get("git_repo")
+        self.git_ref = git_ref or os.environ.get("TRACEROOT_GIT_REF") or git_ctx.get("git_ref")
 
         self._enabled = enabled and bool(self.api_key)
         self._span_processor: TracerootSpanProcessor | None = None
