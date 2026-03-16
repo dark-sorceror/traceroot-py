@@ -1,25 +1,63 @@
-"""Constants and configuration mappings for TraceRoot"""
+"""Constants used by the Traceroot SDK.
 
-DEFAULT_VERIFICATION_ENDPOINT = "https://api.prod1.traceroot.ai/v1/verify/credentials"  # noqa: E501
+This module defines constants used throughout the SDK including default values,
+tracer identification, and type definitions.
+"""
 
-# Environment variable to config field mapping
-# Pattern: TRACEROOT_[CAPITALIZED_CONFIG_FIELD_NAME] -> config_field_name
-ENV_VAR_MAPPING = {
-    "TRACEROOT_SERVICE_NAME": "service_name",
-    "TRACEROOT_GITHUB_OWNER": "github_owner",
-    "TRACEROOT_GITHUB_REPO_NAME": "github_repo_name",
-    "TRACEROOT_GITHUB_COMMIT_HASH": "github_commit_hash",
-    "TRACEROOT_TOKEN": "token",
-    "TRACEROOT_NAME": "name",
-    "TRACEROOT_AWS_REGION": "aws_region",
-    "TRACEROOT_OTLP_ENDPOINT": "otlp_endpoint",
-    "TRACEROOT_ENVIRONMENT": "environment",
-    "TRACEROOT_ENABLE_SPAN_CONSOLE_EXPORT": "enable_span_console_export",
-    "TRACEROOT_ENABLE_LOG_CONSOLE_EXPORT": "enable_log_console_export",
-    "TRACEROOT_ENABLE_SPAN_CLOUD_EXPORT": "enable_span_cloud_export",
-    "TRACEROOT_ENABLE_LOG_CLOUD_EXPORT": "enable_log_cloud_export",
-    "TRACEROOT_LOCAL_MODE": "local_mode",
-    "TRACEROOT_VERIFICATION_ENDPOINT": "verification_endpoint",
-    "TRACEROOT_TRACER_VERBOSE": "tracer_verbose",
-    "TRACEROOT_LOGGER_VERBOSE": "logger_verbose",
-}
+import enum
+
+# =============================================================================
+# SDK Identification
+# =============================================================================
+
+TRACEROOT_TRACER_NAME = "traceroot-sdk"
+"""OpenTelemetry tracer/instrumentation scope name for Traceroot spans."""
+
+SDK_NAME = "traceroot-python"
+"""SDK name for identification in API requests."""
+
+SDK_VERSION = "0.1.0"
+"""SDK version. Should match pyproject.toml version."""
+
+# =============================================================================
+# Default Values
+# =============================================================================
+
+DEFAULT_HOST_URL = "https://api.traceroot.ai"
+"""Default Traceroot API endpoint."""
+
+DEFAULT_FLUSH_AT = 100
+"""Default maximum batch size before triggering a flush."""
+
+DEFAULT_FLUSH_INTERVAL = 5.0
+"""Default interval in seconds between automatic flushes."""
+
+DEFAULT_TIMEOUT = 30.0
+"""Default HTTP request timeout in seconds."""
+
+DEFAULT_ENVIRONMENT = "default"
+"""Default tracing environment name."""
+
+DEFAULT_SERVICE_NAME = "unknown_service"
+"""Default service name when not specified."""
+
+# =============================================================================
+# Span Kinds
+# =============================================================================
+
+
+class SpanKind(enum.StrEnum):
+    """Valid span kinds for the @observe decorator.
+
+    Members work as plain strings everywhere (comparisons, f-strings, OTel
+    attributes) while giving dot-access syntax like ``SpanKind.AGENT``.
+
+    These lowercase values are sent as the
+    ``traceroot.span.type`` OTEL attribute.
+    The backend transformer uppercases them and maps to the ClickHouse enum.
+    """
+
+    SPAN = "span"
+    AGENT = "agent"
+    TOOL = "tool"
+    LLM = "llm"

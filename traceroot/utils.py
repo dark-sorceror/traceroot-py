@@ -44,12 +44,16 @@ def _serialize(value: Any, _seen: set[int]) -> Any:
 
     # Collections
     if isinstance(value, dict):
-        return {_serialize(k, _seen): _serialize(v, _seen) for k, v in value.items()}
+        return {
+            _serialize(k, _seen): _serialize(v, _seen)
+            for k, v in value.items()
+        }
     if isinstance(value, (list, tuple, set, frozenset)):
         return [_serialize(v, _seen) for v in value]
 
     # Standard library types
-    if isinstance(value, datetime):  # datetime before date (datetime is subclass)
+    if isinstance(value,
+                  datetime):  # datetime before date (datetime is subclass)
         return value.isoformat()
     if isinstance(value, date):
         return value.isoformat()
@@ -70,7 +74,7 @@ def _serialize_float(value: float) -> Any:
     if math.isnan(value):
         return "NaN"
     if math.isinf(value):
-        return "Infinity"
+        return "-Infinity" if value < 0 else "Infinity"
     return value
 
 
@@ -97,7 +101,8 @@ def _serialize_object(value: Any, _seen: set[int]) -> Any:
     # Pydantic models
     if PydanticBaseModel is not None and isinstance(value, PydanticBaseModel):
         try:
-            dump = value.model_dump() if hasattr(value, "model_dump") else value.dict()
+            dump = (value.model_dump()
+                    if hasattr(value, "model_dump") else value.dict())
             return _serialize(dump, _seen)
         except Exception:
             pass
@@ -138,7 +143,10 @@ def _serialize_dict_object(value: Any, _seen: set[int]) -> Any:
     attrs = vars(value)
     if not attrs:
         # Class-level attributes (e.g. created via type())
-        attrs = {k: getattr(value, k) for k in dir(value) if not k.startswith("_")}
+        attrs = {
+            k: getattr(value, k)
+            for k in dir(value) if not k.startswith("_")
+        }
 
     result = {k: _serialize(v, _seen) for k, v in attrs.items()}
     _seen.discard(obj_id)

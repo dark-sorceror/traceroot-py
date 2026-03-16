@@ -83,12 +83,12 @@ def _relative_path(filepath: str) -> str:
     # Try git root first for correct GitHub links
     git_root = _get_git_root()
     if git_root and filepath.startswith(git_root):
-        return filepath[len(git_root) :].lstrip(os.sep)
+        return filepath[len(git_root):].lstrip(os.sep)
 
     # Fallback to cwd
     cwd = os.getcwd()
     if filepath.startswith(cwd):
-        return filepath[len(cwd) :].lstrip(os.sep)
+        return filepath[len(cwd):].lstrip(os.sep)
     return filepath
 
 
@@ -109,7 +109,8 @@ def auto_detect_git_context() -> dict[str, str | None]:
         ).strip()
 
         # Parse owner/repo from URL
-        # Handles: https://github.com/o/r.git, git@github.com:o/r.git, ssh://git@github.com/o/r.git
+        # Handles: https://github.com/o/r.git,
+        # git@github.com:o/r.git, ssh://git@github.com/o/r.git
         import re
 
         match = re.match(

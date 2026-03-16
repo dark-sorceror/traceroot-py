@@ -2,61 +2,31 @@
 
 <div align="center">
   <a href="https://traceroot.ai/">
-    <img src="https://raw.githubusercontent.com/traceroot-ai/traceroot/main/misc/images/traceroot_logo.png" alt="TraceRoot Logo">
+    <img src="frontend/ui/public/images/traceroot_logo.png" alt="TraceRoot Logo">
   </a>
-</div>
 
-<div align="center">
-
-[![Testing Status][testing-image]][testing-url]
+[![Y Combinator][y-combinator-image]][y-combinator-url]
+[![License][license-image]][license-url]
+[![X (Twitter)][twitter-image]][twitter-url]
+[![Discord][discord-image]][discord-url]
 [![Documentation][docs-image]][docs-url]
-[![PyPI Version][pypi-image]][pypi-url]
 [![PyPI SDK Downloads][pypi-sdk-downloads-image]][pypi-sdk-downloads-url]
-[![TraceRoot.AI Website](https://raw.githubusercontent.com/traceroot-ai/traceroot/refs/heads/main/misc/images/custom-website-badge.svg)][company-website-url]
 
 </div>
 
 Please see the [Python SDK Docs](https://docs.traceroot.ai/sdk/python) for details.
 
-## Installation
+<!-- Links -->
 
-```bash
-pip install traceroot
-```
-
-## Examples
-
-```python
-import traceroot
-import asyncio
-
-logger = traceroot.get_logger()
-
-@traceroot.trace()
-async def greet(name: str) -> str:
-    logger.info(f"Greeting inside traced function: {name}")
-    # Simulate some async work
-    await asyncio.sleep(0.1)
-    return f"Hello, {name}!"
-
-async def main():
-    result = await greet("world")
-    logger.info(f"Greeting result: {result}")
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-## Contact Us
-
-Please reach out to founders@traceroot.ai if you have any questions.
-
-[company-website-url]: https://traceroot.ai
+[discord-image]: https://img.shields.io/discord/1395844148568920114?logo=discord&labelColor=%235462eb&logoColor=%23f5f5f5&color=%235462eb
+[discord-url]: https://discord.gg/tPyffEZvvJ
 [docs-image]: https://img.shields.io/badge/docs-traceroot.ai-0dbf43
 [docs-url]: https://docs.traceroot.ai
-[pypi-image]: https://badge.fury.io/py/traceroot.svg
+[license-image]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
+[license-url]: https://opensource.org/licenses/Apache-2.0
 [pypi-sdk-downloads-image]: https://static.pepy.tech/badge/traceroot
 [pypi-sdk-downloads-url]: https://pypi.python.org/pypi/traceroot
-[pypi-url]: https://pypi.python.org/pypi/traceroot
-[testing-image]: https://github.com/traceroot-ai/traceroot/actions/workflows/test.yml/badge.svg
-[testing-url]: https://github.com/traceroot-ai/traceroot/actions/workflows/test.yml
+[twitter-image]: https://img.shields.io/twitter/follow/TracerootAI
+[twitter-url]: https://x.com/TracerootAI
+[y-combinator-image]: https://img.shields.io/badge/Combinator-S25-orange?logo=ycombinator&labelColor=white
+[y-combinator-url]: https://www.ycombinator.com/companies/traceroot-ai

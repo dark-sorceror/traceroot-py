@@ -11,14 +11,16 @@ import pytest
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import \
+    InMemorySpanExporter
 
 import traceroot
 from tests.utils import reset_traceroot
 from traceroot import observe
 from traceroot.span_attributes import SpanAttributes
 
-# Global exporter and provider for all tests (OTel doesn't allow provider override)
+# Global exporter and provider for all tests
+# (OTel doesn't allow provider override)
 _test_exporter = InMemorySpanExporter()
 _test_provider = TracerProvider()
 _test_provider.add_span_processor(SimpleSpanProcessor(_test_exporter))
@@ -148,8 +150,10 @@ def test_sibling_spans(memory_exporter):
     parent_span = spans_by_name["parent"]
 
     # Both children should have same parent
-    assert spans_by_name["child-a"].parent.span_id == parent_span.context.span_id
-    assert spans_by_name["child-b"].parent.span_id == parent_span.context.span_id
+    assert spans_by_name[
+        "child-a"].parent.span_id == parent_span.context.span_id
+    assert spans_by_name[
+        "child-b"].parent.span_id == parent_span.context.span_id
 
 
 def test_input_capture(memory_exporter):
@@ -301,7 +305,10 @@ def test_metadata_and_tags(memory_exporter):
 
     @observe(
         name="tagged-op",
-        metadata={"version": "1.0", "env": "test"},
+        metadata={
+            "version": "1.0",
+            "env": "test"
+        },
         tags=["production", "critical"],
     )
     def tagged_op():
@@ -332,7 +339,10 @@ def test_update_current_span_metadata(memory_exporter):
 
     @observe(name="span-with-metadata")
     def func_with_metadata():
-        traceroot.update_current_span(metadata={"custom_key": "custom_value", "score": 0.95})
+        traceroot.update_current_span(metadata={
+            "custom_key": "custom_value",
+            "score": 0.95
+        })
         return "done"
 
     func_with_metadata()
@@ -349,7 +359,7 @@ def test_update_current_span_metadata(memory_exporter):
 
 
 def test_update_current_trace_metadata(memory_exporter):
-    """Test update_current_trace sets trace-level metadata on the active span."""
+    """update_current_trace sets trace-level metadata."""
     import json
 
     @observe(name="trace-with-metadata")
@@ -404,9 +414,8 @@ async def test_async_span_hierarchy(memory_exporter):
     assert len(spans) == 2
 
     spans_by_name = get_spans_by_name(memory_exporter)
-    assert (
-        spans_by_name["async-child"].parent.span_id == spans_by_name["async-parent"].context.span_id
-    )
+    assert (spans_by_name["async-child"].parent.span_id ==
+            spans_by_name["async-parent"].context.span_id)
 
 
 def test_all_spans_share_trace_id(memory_exporter):
