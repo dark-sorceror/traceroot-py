@@ -2,11 +2,11 @@
 
 build:
 	rm -rf dist traceroot.egg-info/
-	python -m build
+	uv build
 
 upload:
-	twine check dist/*
-	twine upload dist/*
+	uvx twine check dist/*
+	uvx twine upload dist/*
 
 clean:
 	rm -rf dist traceroot.egg-info/
