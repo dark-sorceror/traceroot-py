@@ -39,7 +39,8 @@ def update_current_span(
         metadata: Additional metadata as key-value pairs.
         model: LLM model name (e.g., "gpt-4o", "claude-3-opus").
         model_parameters: Model parameters (e.g., temperature, max_tokens).
-        usage: Token usage dict (e.g., {"input_tokens": 100, "output_tokens": 50}).
+        usage: Token usage dict
+            (e.g., {"input_tokens": 100, "output_tokens": 50}).
         prompt: The prompt/messages sent to the LLM.
 
     Example:
@@ -79,7 +80,9 @@ def update_current_span(
 
     # LLM-specific attributes
     set_span_attribute(span, SpanAttributes.LLM_MODEL, model)
-    set_span_attribute(span, SpanAttributes.LLM_MODEL_PARAMETERS, model_parameters)
+    set_span_attribute(
+        span, SpanAttributes.LLM_MODEL_PARAMETERS, model_parameters
+    )
     set_span_attribute(span, SpanAttributes.LLM_USAGE, usage)
     set_span_attribute(span, SpanAttributes.LLM_PROMPT, prompt)
 

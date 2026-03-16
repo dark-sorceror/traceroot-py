@@ -23,7 +23,8 @@ class Integration(StrEnum):
     LANGCHAIN = "langchain"
 
 
-# Maps Integration enum -> (library to detect, instrumentor module path, instrumentor class name)
+# Maps Integration enum ->
+# (library to detect, instrumentor module path, instrumentor class name)
 _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
     Integration.OPENAI: (
         "openai",
@@ -85,7 +86,12 @@ def initialize_integrations(
             instrumentor_cls = getattr(module, class_name)
             instrumentor = instrumentor_cls()
             instrumentor.instrument(tracer_provider=tracer_provider)
-            logger.info("Instrumented %s via %s.%s", library, module_path, class_name)
+            logger.info(
+                "Instrumented %s via %s.%s",
+                library,
+                module_path,
+                class_name,
+            )
             instrumented.append(instrument)
         except Exception:
             logger.warning("Failed to instrument %s", library, exc_info=True)
