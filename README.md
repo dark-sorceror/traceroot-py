@@ -5,27 +5,28 @@
     <img src="frontend/ui/public/images/traceroot_logo.png" alt="TraceRoot Logo">
   </a>
 
-  [![Y Combinator][y-combinator-image]][y-combinator-url]
-  [![License][license-image]][license-url]
-  [![X (Twitter)][twitter-image]][twitter-url]
-  [![Discord][discord-image]][discord-url]
-  [![Documentation][docs-image]][docs-url]
-  [![PyPI SDK Downloads][pypi-sdk-downloads-image]][pypi-sdk-downloads-url]
+[![Y Combinator][y-combinator-image]][y-combinator-url]
+[![License][license-image]][license-url]
+[![X (Twitter)][twitter-image]][twitter-url]
+[![Discord][discord-image]][discord-url]
+[![Documentation][docs-image]][docs-url]
+[![PyPI SDK Downloads][pypi-sdk-downloads-image]][pypi-sdk-downloads-url]
 
 </div>
 
 Please see the [Python SDK Docs](https://docs.traceroot.ai/sdk/python) for details.
 
 <!-- Links -->
+
 [discord-image]: https://img.shields.io/discord/1395844148568920114?logo=discord&labelColor=%235462eb&logoColor=%23f5f5f5&color=%235462eb
 [discord-url]: https://discord.gg/tPyffEZvvJ
-[license-image]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-[license-url]: https://opensource.org/licenses/Apache-2.0
 [docs-image]: https://img.shields.io/badge/docs-traceroot.ai-0dbf43
 [docs-url]: https://docs.traceroot.ai
+[license-image]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
+[license-url]: https://opensource.org/licenses/Apache-2.0
 [pypi-sdk-downloads-image]: https://static.pepy.tech/badge/traceroot
 [pypi-sdk-downloads-url]: https://pypi.python.org/pypi/traceroot
-[y-combinator-image]: https://img.shields.io/badge/Combinator-S25-orange?logo=ycombinator&labelColor=white
-[y-combinator-url]: https://www.ycombinator.com/companies/traceroot-ai
 [twitter-image]: https://img.shields.io/twitter/follow/TracerootAI
 [twitter-url]: https://x.com/TracerootAI
+[y-combinator-image]: https://img.shields.io/badge/Combinator-S25-orange?logo=ycombinator&labelColor=white
+[y-combinator-url]: https://www.ycombinator.com/companies/traceroot-ai

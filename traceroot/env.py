@@ -1,7 +1,8 @@
 """Environment variable definitions for Traceroot SDK.
 
-This module defines all environment variables used to configure the Traceroot SDK.
-Each variable includes documentation on its purpose, expected values, and defaults.
+This module defines all environment variables used to
+configure the Traceroot SDK. Each variable includes
+documentation on its purpose, expected values, and defaults.
 
 Usage:
     import os
@@ -78,7 +79,8 @@ TRACEROOT_ENABLED = "TRACEROOT_ENABLED"
 """
 .. envvar:: TRACEROOT_ENABLED
 
-Enable or disable the Traceroot SDK. When disabled, all tracing calls become no-ops.
+Enable or disable the Traceroot SDK. When disabled,
+all tracing calls become no-ops.
 Accepts: "true", "false", "1", "0", "yes", "no", "on", "off" (case-insensitive)
 
 **Default:** ``true``

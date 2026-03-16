@@ -75,11 +75,9 @@ def initialize_integrations(
         library, module_path, class_name = _BUILTIN_REGISTRY[instrument]
 
         if not _is_package_installed(library):
-            raise ImportError(
-                f"Cannot instrument {instrument.value}: "
-                f"package '{library}' is not installed. "
-                f"Install it with: pip install {library}"
-            )
+            raise ImportError(f"Cannot instrument {instrument.value}: "
+                              f"package '{library}' is not installed. "
+                              f"Install it with: pip install {library}")
 
         try:
             module = importlib.import_module(module_path)

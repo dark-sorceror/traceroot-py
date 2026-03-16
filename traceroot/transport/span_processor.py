@@ -7,23 +7,13 @@ OpenTelemetry's BatchSpanProcessor with Traceroot-specific configuration.
 import os
 
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
-    Compression,
-    OTLPSpanExporter,
-)
+    Compression, OTLPSpanExporter)
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from traceroot.constants import (
-    DEFAULT_FLUSH_AT,
-    DEFAULT_FLUSH_INTERVAL,
-    DEFAULT_TIMEOUT,
-    SDK_NAME,
-    SDK_VERSION,
-)
-from traceroot.env import (
-    TRACEROOT_FLUSH_AT,
-    TRACEROOT_FLUSH_INTERVAL,
-    TRACEROOT_TIMEOUT,
-)
+from traceroot.constants import (DEFAULT_FLUSH_AT, DEFAULT_FLUSH_INTERVAL,
+                                 DEFAULT_TIMEOUT, SDK_NAME, SDK_VERSION)
+from traceroot.env import (TRACEROOT_FLUSH_AT, TRACEROOT_FLUSH_INTERVAL,
+                           TRACEROOT_TIMEOUT)
 
 
 class TracerootSpanProcessor(BatchSpanProcessor):
@@ -73,11 +63,8 @@ class TracerootSpanProcessor(BatchSpanProcessor):
         # Resolve flush_interval with env var fallback
         if flush_interval is None:
             env_flush_interval = os.environ.get(TRACEROOT_FLUSH_INTERVAL)
-            flush_interval = (
-                float(env_flush_interval)
-                if env_flush_interval
-                else DEFAULT_FLUSH_INTERVAL
-            )
+            flush_interval = (float(env_flush_interval) if env_flush_interval
+                              else DEFAULT_FLUSH_INTERVAL)
 
         # Resolve timeout with env var fallback
         if timeout is None:
@@ -85,9 +72,7 @@ class TracerootSpanProcessor(BatchSpanProcessor):
             timeout = float(env_timeout) if env_timeout else DEFAULT_TIMEOUT
 
         # Build endpoint URL
-        endpoint = (
-            f"{host_url.rstrip('/')}/api/v1/public/traces"
-        )
+        endpoint = f"{host_url.rstrip('/')}/api/v1/public/traces"
 
         # Create the standard OTLP exporter (protobuf format)
         exporter = OTLPSpanExporter(

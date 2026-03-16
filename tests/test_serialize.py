@@ -19,6 +19,7 @@ from traceroot.utils import serialize_value
 
 
 class TestPrimitives:
+
     def test_none(self):
         assert serialize_value(None) is None
 
@@ -66,6 +67,7 @@ class TestPrimitives:
 
 
 class TestCollections:
+
     def test_list(self):
         assert serialize_value([1, "two", 3.0]) == [1, "two", 3.0]
 
@@ -101,6 +103,7 @@ class TestCollections:
 
 
 class TestStdlibTypes:
+
     def test_datetime(self):
         dt = datetime(2026, 2, 5, 12, 30, 0)
         assert serialize_value(dt) == "2026-02-05T12:30:00"
@@ -126,6 +129,7 @@ class TestStdlibTypes:
         assert serialize_value(b"\xff\xfe") == "<non-utf8 bytes>"
 
     def test_enum(self):
+
         class Color(enum.Enum):
             RED = "red"
             BLUE = "blue"
@@ -133,6 +137,7 @@ class TestStdlibTypes:
         assert serialize_value(Color.RED) == "red"
 
     def test_int_enum(self):
+
         class Priority(enum.IntEnum):
             LOW = 1
             HIGH = 2
@@ -148,8 +153,11 @@ class TestStdlibTypes:
 
 
 class TestCustomObjects:
+
     def test_object_with_dict(self):
+
         class Msg:
+
             def __init__(self):
                 self.content = "hello"
                 self.role = "assistant"
@@ -158,11 +166,14 @@ class TestCustomObjects:
         assert result == {"content": "hello", "role": "assistant"}
 
     def test_nested_custom_objects(self):
+
         class Inner:
+
             def __init__(self):
                 self.value = 42
 
         class Outer:
+
             def __init__(self):
                 self.inner = Inner()
                 self.name = "outer"
@@ -178,7 +189,9 @@ class TestCustomObjects:
         assert result["temperature"] == 0.7
 
     def test_circular_reference(self):
+
         class Node:
+
             def __init__(self):
                 self.child = None
 
@@ -188,11 +201,14 @@ class TestCustomObjects:
         assert result["child"] == "<circular ref: Node>"
 
     def test_mutual_circular_reference(self):
+
         class A:
+
             def __init__(self):
                 self.b = None
 
         class B:
+
             def __init__(self):
                 self.a = None
 
@@ -204,6 +220,7 @@ class TestCustomObjects:
         assert result["b"]["a"] == "<circular ref: A>"
 
     def test_slots_object(self):
+
         class Point:
             __slots__ = ("x", "y")
 
@@ -222,7 +239,9 @@ class TestMockMessage:
     """Tests that replicate the exact pattern from the streaming example."""
 
     def _make_mock_message(self, content, tool_calls=None):
+
         class MockToolCall:
+
             def __init__(self, data):
                 self.id = data["id"]
                 self.function = type(
@@ -235,11 +254,12 @@ class TestMockMessage:
                 )()
 
         class MockMessage:
+
             def __init__(self, content, tool_calls):
                 self.content = content
                 self.tool_calls = (
-                    [MockToolCall(tc) for tc in tool_calls.values()] if tool_calls else None
-                )
+                    [MockToolCall(tc)
+                     for tc in tool_calls.values()] if tool_calls else None)
 
         return MockMessage(content, tool_calls)
 
@@ -247,11 +267,17 @@ class TestMockMessage:
         tool_calls = {
             0: {
                 "id": "call_abc",
-                "function": {"name": "get_weather", "arguments": '{"city":"SF"}'},
+                "function": {
+                    "name": "get_weather",
+                    "arguments": '{"city":"SF"}'
+                },
             },
             1: {
                 "id": "call_def",
-                "function": {"name": "get_weather", "arguments": '{"city":"Tokyo"}'},
+                "function": {
+                    "name": "get_weather",
+                    "arguments": '{"city":"Tokyo"}'
+                },
             },
         }
         msg = self._make_mock_message("", tool_calls)
@@ -273,7 +299,13 @@ class TestMockMessage:
     def test_json_roundtrip(self):
         """Ensure the serialized output can be JSON-encoded."""
         tool_calls = {
-            0: {"id": "call_1", "function": {"name": "calc", "arguments": '{"x":1}'}},
+            0: {
+                "id": "call_1",
+                "function": {
+                    "name": "calc",
+                    "arguments": '{"x":1}'
+                }
+            },
         }
         msg = self._make_mock_message("partial", tool_calls)
         result = serialize_value(msg)
@@ -289,7 +321,9 @@ class TestMockMessage:
 
 
 class TestDataclasses:
+
     def test_simple_dataclass(self):
+
         @dataclass
         class Usage:
             prompt_tokens: int
@@ -299,6 +333,7 @@ class TestDataclasses:
         assert result == {"prompt_tokens": 10, "completion_tokens": 20}
 
     def test_nested_dataclass(self):
+
         @dataclass
         class Inner:
             value: str
@@ -316,6 +351,7 @@ class TestDataclasses:
 
 
 class TestPydantic:
+
     def test_pydantic_model(self):
         try:
             from pydantic import BaseModel
@@ -334,12 +370,15 @@ class TestPydantic:
 
 
 class TestEdgeCases:
+
     def test_deeply_nested(self):
         val = {"a": [{"b": {"c": [1, 2, {"d": True}]}}]}
         assert serialize_value(val) == val
 
     def test_list_of_custom_objects(self):
+
         class Item:
+
             def __init__(self, n):
                 self.n = n
 
@@ -347,7 +386,9 @@ class TestEdgeCases:
         assert result == [{"n": 1}, {"n": 2}]
 
     def test_dict_with_custom_object_values(self):
+
         class Score:
+
             def __init__(self, v):
                 self.v = v
 
@@ -355,7 +396,9 @@ class TestEdgeCases:
         assert result == {"a": {"v": 10}}
 
     def test_object_with_none_attr(self):
+
         class Partial:
+
             def __init__(self):
                 self.present = "yes"
                 self.absent = None
@@ -364,6 +407,7 @@ class TestEdgeCases:
         assert result == {"present": "yes", "absent": None}
 
     def test_empty_custom_object(self):
+
         class Empty:
             pass
 

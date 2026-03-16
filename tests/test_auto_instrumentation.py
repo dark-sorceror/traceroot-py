@@ -7,11 +7,9 @@ from opentelemetry.sdk.trace import TracerProvider
 
 import traceroot
 from tests.utils import reset_traceroot
-from traceroot.instrumentation.registry import (
-    Integration,
-    _is_package_installed,
-    initialize_integrations,
-)
+from traceroot.instrumentation.registry import (Integration,
+                                                _is_package_installed,
+                                                initialize_integrations)
 
 # =============================================================================
 # Integration enum
@@ -81,7 +79,8 @@ def test_integrations_with_enum_values(mock_installed):
         )
 
     assert result == [Integration.OPENAI]
-    mock_instrumentor.instrument.assert_called_once_with(tracer_provider=provider)
+    mock_instrumentor.instrument.assert_called_once_with(
+        tracer_provider=provider)
 
 
 @patch("traceroot.instrumentation.registry._is_package_installed")
@@ -112,7 +111,8 @@ def test_failed_instrumentation_continues(mock_installed):
 
     provider = TracerProvider()
 
-    with patch("importlib.import_module", side_effect=ImportError("no module")):
+    with patch("importlib.import_module",
+               side_effect=ImportError("no module")):
         result = initialize_integrations(
             tracer_provider=provider,
             integrations=[Integration.OPENAI],
@@ -140,14 +140,17 @@ def test_client_calls_initialize_integrations(mock_set_provider, mock_init):
 
     mock_init.assert_called_once()
     _, kwargs = mock_init.call_args
-    assert kwargs["integrations"] == [Integration.OPENAI, Integration.LANGCHAIN]
+    assert kwargs["integrations"] == [
+        Integration.OPENAI, Integration.LANGCHAIN
+    ]
 
 
 @patch("opentelemetry.trace.set_tracer_provider")
 def test_client_skips_instrumentation_when_not_requested(mock_set_provider):
     reset_traceroot()
 
-    with patch("traceroot.instrumentation.registry.initialize_integrations") as mock_init:
+    with patch("traceroot.instrumentation.registry.initialize_integrations"
+               ) as mock_init:
         traceroot.initialize(api_key="test-key")
         mock_init.assert_not_called()
 
@@ -155,6 +158,7 @@ def test_client_skips_instrumentation_when_not_requested(mock_set_provider):
 def test_client_skips_instrumentation_when_disabled():
     reset_traceroot()
 
-    with patch("traceroot.instrumentation.registry.initialize_integrations") as mock_init:
+    with patch("traceroot.instrumentation.registry.initialize_integrations"
+               ) as mock_init:
         traceroot.initialize(enabled=False, integrations=[Integration.OPENAI])
         mock_init.assert_not_called()

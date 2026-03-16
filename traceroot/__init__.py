@@ -74,7 +74,12 @@ def initialize(
 
     Example:
         import traceroot
-        traceroot.initialize(integrations=[Integration.OPENAI, Integration.LANGCHAIN])
+        traceroot.initialize(
+            integrations=[
+                Integration.OPENAI,
+                Integration.LANGCHAIN,
+            ]
+        )
     """
     global _client
     _client = TracerootClient(

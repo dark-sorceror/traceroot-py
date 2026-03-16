@@ -80,9 +80,8 @@ def update_current_span(
 
     # LLM-specific attributes
     set_span_attribute(span, SpanAttributes.LLM_MODEL, model)
-    set_span_attribute(
-        span, SpanAttributes.LLM_MODEL_PARAMETERS, model_parameters
-    )
+    set_span_attribute(span, SpanAttributes.LLM_MODEL_PARAMETERS,
+                       model_parameters)
     set_span_attribute(span, SpanAttributes.LLM_USAGE, usage)
     set_span_attribute(span, SpanAttributes.LLM_PROMPT, prompt)
 

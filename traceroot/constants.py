@@ -52,7 +52,8 @@ class SpanKind(enum.StrEnum):
     Members work as plain strings everywhere (comparisons, f-strings, OTel
     attributes) while giving dot-access syntax like ``SpanKind.AGENT``.
 
-    These lowercase values are sent as the ``traceroot.span.type`` OTEL attribute.
+    These lowercase values are sent as the
+    ``traceroot.span.type`` OTEL attribute.
     The backend transformer uppercases them and maps to the ClickHouse enum.
     """
 

@@ -78,9 +78,8 @@ def observe(
         validated_kind = SpanKind(type)
     except ValueError:
         valid = ", ".join(m.value for m in SpanKind)
-        logger.warning(
-            f"Invalid span kind '{type}'. Valid kinds are: {valid}. Defaulting to 'span'."
-        )
+        logger.warning(f"Invalid span kind '{type}'. Valid kinds"
+                       f" are: {valid}. Defaulting to 'span'.")
         validated_kind = SpanKind.SPAN
 
     def decorator(func: F) -> F:
@@ -94,7 +93,14 @@ def observe(
                 tracer = trace.get_tracer(TRACEROOT_TRACER_NAME, SDK_VERSION)
                 with tracer.start_as_current_span(span_name) as span:
                     _set_span_attributes(
-                        span, validated_kind, metadata, tags, args, kwargs, func, capture_input
+                        span,
+                        validated_kind,
+                        metadata,
+                        tags,
+                        args,
+                        kwargs,
+                        func,
+                        capture_input,
                     )
                     _set_source_and_git_context(span)
 
@@ -118,7 +124,14 @@ def observe(
                 tracer = trace.get_tracer(TRACEROOT_TRACER_NAME, SDK_VERSION)
                 with tracer.start_as_current_span(span_name) as span:
                     _set_span_attributes(
-                        span, validated_kind, metadata, tags, args, kwargs, func, capture_input
+                        span,
+                        validated_kind,
+                        metadata,
+                        tags,
+                        args,
+                        kwargs,
+                        func,
+                        capture_input,
                     )
                     _set_source_and_git_context(span)
 
@@ -141,11 +154,14 @@ def _set_source_and_git_context(span: trace.Span) -> None:
     """Set source location and git context attributes on span."""
     source = capture_source_location()
     if source.get("git_source_file"):
-        span.set_attribute(SpanAttributes.GIT_SOURCE_FILE, source["git_source_file"])
+        span.set_attribute(SpanAttributes.GIT_SOURCE_FILE,
+                           source["git_source_file"])
     if source.get("git_source_line"):
-        span.set_attribute(SpanAttributes.GIT_SOURCE_LINE, source["git_source_line"])
+        span.set_attribute(SpanAttributes.GIT_SOURCE_LINE,
+                           source["git_source_line"])
     if source.get("git_source_function"):
-        span.set_attribute(SpanAttributes.GIT_SOURCE_FUNCTION, source["git_source_function"])
+        span.set_attribute(SpanAttributes.GIT_SOURCE_FUNCTION,
+                           source["git_source_function"])
 
     from traceroot import get_client
 
@@ -209,4 +225,7 @@ def _capture_args(args: tuple, kwargs: dict, func: Callable) -> dict[str, Any]:
     bound = sig.bind(*args, **kwargs)
     bound.apply_defaults()
     # Filter out 'self' and 'cls' to avoid capturing instance/class references
-    return {k: serialize_value(v) for k, v in bound.arguments.items() if k not in ("self", "cls")}
+    return {
+        k: serialize_value(v)
+        for k, v in bound.arguments.items() if k not in ("self", "cls")
+    }
