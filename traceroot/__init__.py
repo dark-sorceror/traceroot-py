@@ -123,6 +123,8 @@ def shutdown() -> None:
 
 
 __all__ = [
+    # Version
+    "__version__",
     # Core
     "initialize",
     "get_client",
