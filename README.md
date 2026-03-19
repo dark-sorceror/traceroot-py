@@ -9,7 +9,7 @@
 
 # Documentation
 
-Please see the [Python SDK Docs](https://docs.traceroot.ai/sdk/python) for details.
+Please see the [Python SDK Docs](https://traceroot.ai/docs/tracing/get-started) for details.
 
 <!-- Links -->
 
