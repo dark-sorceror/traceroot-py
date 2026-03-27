@@ -35,7 +35,7 @@ TRACEROOT_HOST_URL = "TRACEROOT_HOST_URL"
 
 Base URL of the Traceroot API endpoint.
 
-**Default:** ``https://api.traceroot.ai``
+**Default:** ``https://app.traceroot.ai``
 """
 
 TRACEROOT_TIMEOUT = "TRACEROOT_TIMEOUT"
