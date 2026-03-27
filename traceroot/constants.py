@@ -24,7 +24,7 @@ SDK_VERSION = importlib.metadata.version("traceroot")
 # Default Values
 # =============================================================================
 
-DEFAULT_HOST_URL = "https://api.traceroot.ai"
+DEFAULT_HOST_URL = "https://app.traceroot.ai"
 """Default Traceroot API endpoint."""
 
 DEFAULT_FLUSH_AT = 100
