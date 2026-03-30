@@ -16,7 +16,7 @@ Please see the [Python SDK Docs](https://traceroot.ai/docs/tracing/get-started) 
 [discord-image]: https://img.shields.io/discord/1395844148568920114?logo=discord&labelColor=%235462eb&logoColor=%23f5f5f5&color=%235462eb
 [discord-url]: https://discord.gg/tPyffEZvvJ
 [docs-image]: https://img.shields.io/badge/docs-traceroot.ai-0dbf43
-[docs-url]: https://docs.traceroot.ai
+[docs-url]: https://traceroot.ai/docs/tracing/get-started
 [license-image]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [license-url]: https://opensource.org/licenses/Apache-2.0
 [pypi-sdk-downloads-image]: https://static.pepy.tech/badge/traceroot
