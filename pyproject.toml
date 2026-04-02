@@ -1,7 +1,7 @@
 [project]
 name = "traceroot"
 version = "0.1.0"
-description = "Traceroot Python SDK - Observability for LLM applications"
+description = "Python SDK for TraceRoot"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
