@@ -20,7 +20,7 @@ Please see the [Python SDK Docs](https://traceroot.ai/docs/tracing/get-started) 
 [docs-url]: https://traceroot.ai/docs/tracing/get-started
 [license-image]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [license-url]: https://opensource.org/licenses/Apache-2.0
-[pypi-version-image]: https://img.shields.io/pypi/v/traceroot?label=traceroot&logo=pypi&logoColor=white&labelColor=0dbf43&color=grey
+[pypi-version-image]: https://img.shields.io/pypi/v/traceroot?label=traceroot&labelColor=0dbf43&color=grey
 [pypi-version-url]: https://pypi.org/project/traceroot/
 [pypi-sdk-downloads-image]: https://static.pepy.tech/badge/traceroot
 [pypi-sdk-downloads-url]: https://pypi.python.org/pypi/traceroot
