@@ -21,6 +21,7 @@ class Integration(StrEnum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     LANGCHAIN = "langchain"
+    GEMINI = "gemini"
 
 
 # Maps Integration enum ->
@@ -40,6 +41,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "langchain",
         "openinference.instrumentation.langchain",
         "LangChainInstrumentor",
+    ),
+    Integration.GEMINI: (
+        "google-genai",
+        "openinference.instrumentation.google_genai",
+        "GoogleGenAIInstrumentor",
     ),
 }
 
