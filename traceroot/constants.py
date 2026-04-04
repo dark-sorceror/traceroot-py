@@ -14,7 +14,7 @@ import importlib.metadata
 TRACEROOT_TRACER_NAME = "traceroot-sdk"
 """OpenTelemetry tracer/instrumentation scope name for Traceroot spans."""
 
-SDK_NAME = "traceroot-python"
+SDK_NAME = "traceroot-py"
 """SDK name for identification in API requests."""
 
 SDK_VERSION = importlib.metadata.version("traceroot")
