@@ -22,7 +22,7 @@ def test_integration_enum_values():
     assert Integration.OPENAI == "openai"
     assert Integration.ANTHROPIC == "anthropic"
     assert Integration.LANGCHAIN == "langchain"
-    assert Integration.GEMINI == "gemini"
+    assert Integration.GOOGLE_GENAI == "google_genai"
 
 
 def test_integration_exported_from_traceroot():
