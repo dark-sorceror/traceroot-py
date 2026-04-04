@@ -2,7 +2,6 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
 from opentelemetry.sdk.trace import TracerProvider
 
 import traceroot
@@ -53,15 +52,21 @@ def test_empty_integrations_returns_empty():
 
 
 @patch("traceroot.instrumentation.registry._is_package_installed")
-def test_raises_if_library_not_installed(mock_installed):
+def test_warns_and_skips_if_library_not_installed(mock_installed, caplog):
+    import logging
+
     mock_installed.return_value = False
 
     provider = TracerProvider()
-    with pytest.raises(ImportError, match="Cannot instrument openai"):
-        initialize_integrations(
+    with caplog.at_level(logging.WARNING, logger="traceroot.instrumentation.registry"):
+        result = initialize_integrations(
             tracer_provider=provider,
             integrations=[Integration.OPENAI],
         )
+
+    assert result == []
+    assert "skipping" in caplog.text
+    assert "openai" in caplog.text
 
 
 @patch("traceroot.instrumentation.registry._is_package_installed")
