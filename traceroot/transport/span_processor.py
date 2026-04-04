@@ -107,6 +107,12 @@ class TracerootSpanProcessor(BatchSpanProcessor):
         self._flush_at = flush_at
         self._flush_interval = flush_interval
 
+    def on_start(self, span, parent_context=None):
+        if span.is_recording():
+            span.set_attribute("traceroot.sdk.name", SDK_NAME)
+            span.set_attribute("traceroot.sdk.version", SDK_VERSION)
+        super().on_start(span, parent_context)
+
     @property
     def flush_at(self) -> int:
         """Get the configured batch size."""

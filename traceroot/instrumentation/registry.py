@@ -75,11 +75,14 @@ def initialize_integrations(
         library, module_path, class_name = _BUILTIN_REGISTRY[instrument]
 
         if not _is_package_installed(library):
-            raise ImportError(
-                f"Cannot instrument {instrument.value}: "
-                f"package '{library}' is not installed. "
-                f"Install it with: pip install {library}"
+            logger.warning(
+                "traceroot: skipping %s integration — '%s' is not installed. "
+                "Install it with: pip install %s",
+                instrument.value,
+                library,
+                library,
             )
+            continue
 
         try:
             module = importlib.import_module(module_path)

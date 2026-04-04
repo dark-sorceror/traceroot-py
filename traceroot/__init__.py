@@ -23,6 +23,9 @@ Session Management:
         response = client.chat.completions.create(...)
 """
 
+import logging
+import threading
+
 # Re-export using_attributes from OpenInference for convenience
 from openinference.instrumentation import using_attributes
 
@@ -33,10 +36,13 @@ from traceroot.decorators import observe
 from traceroot.instrumentation import Integration
 from traceroot.update import update_current_span, update_current_trace
 
+logger = logging.getLogger(__name__)
+
 # =============================================================================
 # Global Singleton Client
 # =============================================================================
 _client: TracerootClient | None = None
+_init_lock = threading.Lock()
 
 
 def initialize(
@@ -81,17 +87,24 @@ def initialize(
         )
     """
     global _client
-    _client = TracerootClient(
-        api_key=api_key,
-        host_url=host_url,
-        flush_interval=flush_interval,
-        batch_size=batch_size,
-        timeout=timeout,
-        enabled=enabled,
-        integrations=integrations,
-        git_repo=git_repo,
-        git_ref=git_ref,
-    )
+    with _init_lock:
+        if _client is not None:
+            logger.warning(
+                "traceroot.initialize() called more than once — ignoring. "
+                "Call traceroot.shutdown() first if you need to reinitialize."
+            )
+            return _client
+        _client = TracerootClient(
+            api_key=api_key,
+            host_url=host_url,
+            flush_interval=flush_interval,
+            batch_size=batch_size,
+            timeout=timeout,
+            enabled=enabled,
+            integrations=integrations,
+            git_repo=git_repo,
+            git_ref=git_ref,
+        )
     return _client
 
 

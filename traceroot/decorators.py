@@ -42,6 +42,8 @@ def observe(
     tags: list[str] | None = None,
     capture_input: bool = True,
     capture_output: bool = True,
+    session_id: str | None = None,
+    user_id: str | None = None,
 ) -> Callable[[F], F]:
     """Decorator to create an OpenTelemetry span for a function.
 
@@ -56,6 +58,8 @@ def observe(
         tags: Tags to attach.
         capture_input: Whether to capture function arguments.
         capture_output: Whether to capture return value.
+        session_id: Session identifier attached to the trace.
+        user_id: User identifier attached to the trace.
 
     Returns:
         Decorated function.
@@ -86,7 +90,58 @@ def observe(
     def decorator(func: F) -> F:
         span_name = name or func.__name__
 
-        if inspect.iscoroutinefunction(func):
+        if inspect.isasyncgenfunction(func):
+
+            @functools.wraps(func)
+            async def async_gen_wrapper(*args: Any, **kwargs: Any) -> Any:
+                _ensure_initialized()
+                tracer = trace.get_tracer(TRACEROOT_TRACER_NAME, SDK_VERSION)
+                span = tracer.start_span(span_name)
+                _set_span_attributes(
+                    span,
+                    validated_kind,
+                    metadata,
+                    tags,
+                    args,
+                    kwargs,
+                    func,
+                    capture_input,
+                    session_id,
+                    user_id,
+                )
+                _set_source_and_git_context(span)
+                gen = func(*args, **kwargs)
+                async for item in _wrap_async_generator(gen, span, capture_output):
+                    yield item
+
+            return async_gen_wrapper  # type: ignore[return-value]
+
+        elif inspect.isgeneratorfunction(func):
+
+            @functools.wraps(func)
+            def sync_gen_wrapper(*args: Any, **kwargs: Any) -> Any:
+                _ensure_initialized()
+                tracer = trace.get_tracer(TRACEROOT_TRACER_NAME, SDK_VERSION)
+                span = tracer.start_span(span_name)
+                _set_span_attributes(
+                    span,
+                    validated_kind,
+                    metadata,
+                    tags,
+                    args,
+                    kwargs,
+                    func,
+                    capture_input,
+                    session_id,
+                    user_id,
+                )
+                _set_source_and_git_context(span)
+                gen = func(*args, **kwargs)
+                yield from _wrap_sync_generator(gen, span, capture_output)
+
+            return sync_gen_wrapper  # type: ignore[return-value]
+
+        elif inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
             async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -102,6 +157,8 @@ def observe(
                         kwargs,
                         func,
                         capture_input,
+                        session_id,
+                        user_id,
                     )
                     _set_source_and_git_context(span)
 
@@ -133,6 +190,8 @@ def observe(
                         kwargs,
                         func,
                         capture_input,
+                        session_id,
+                        user_id,
                     )
                     _set_source_and_git_context(span)
 
@@ -149,6 +208,50 @@ def observe(
             return sync_wrapper  # type: ignore[return-value]
 
     return decorator
+
+
+def _wrap_sync_generator(
+    gen: Any,
+    span: trace.Span,
+    capture_output: bool,
+) -> Any:
+    """Yield items from a sync generator, keeping the span open until exhausted."""
+    collected: list[Any] = []
+    try:
+        for item in gen:
+            collected.append(item)
+            yield item
+        if capture_output and collected:
+            _set_output(span, collected)
+    except GeneratorExit:
+        raise
+    except Exception as e:
+        span.set_status(Status(StatusCode.ERROR, str(e)))
+        span.record_exception(e)
+        raise
+    finally:
+        span.end()
+
+
+async def _wrap_async_generator(
+    gen: Any,
+    span: trace.Span,
+    capture_output: bool,
+) -> Any:
+    """Yield items from an async generator, keeping the span open until exhausted."""
+    collected: list[Any] = []
+    try:
+        async for item in gen:
+            collected.append(item)
+            yield item
+        if capture_output and collected:
+            _set_output(span, collected)
+    except Exception as e:
+        span.set_status(Status(StatusCode.ERROR, str(e)))
+        span.record_exception(e)
+        raise
+    finally:
+        span.end()
 
 
 def _set_source_and_git_context(span: trace.Span) -> None:
@@ -179,10 +282,18 @@ def _set_span_attributes(
     kwargs: dict,
     func: Callable,
     capture_input: bool,
+    session_id: str | None = None,
+    user_id: str | None = None,
 ) -> None:
     """Set attributes on an OpenTelemetry span."""
     # Set span kind
     span.set_attribute(SpanAttributes.SPAN_TYPE, span_kind)
+
+    # Set session/user ID if provided directly on the decorator
+    if session_id:
+        span.set_attribute(SpanAttributes.TRACE_SESSION_ID, session_id)
+    if user_id:
+        span.set_attribute(SpanAttributes.TRACE_USER_ID, user_id)
 
     # Set attributes from OpenInference context (session_id, user_id, etc.)
     try:

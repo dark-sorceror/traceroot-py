@@ -105,6 +105,12 @@ class TracerootClient:
         self.git_ref = git_ref or os.environ.get("TRACEROOT_GIT_REF") or git_ctx.get("git_ref")
 
         self._enabled = enabled and bool(self.api_key)
+        if enabled and not self.api_key:
+            logger.warning(
+                "TraceRoot: no API key provided — tracing is disabled. "
+                "Set the TRACEROOT_API_KEY environment variable or pass "
+                "api_key= to traceroot.initialize()."
+            )
         self._span_processor: TracerootSpanProcessor | None = None
         self._provider: TracerProvider | None = None
         self._initialized = False

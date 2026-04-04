@@ -21,15 +21,15 @@ def test_disabled_without_api_key():
     assert client.enabled is False
 
 
-def test_singleton_replacement():
-    """Test re-initializing replaces the singleton."""
+def test_reinitialize_is_noop():
+    """Test re-initializing returns the same client without replacing it."""
     reset_traceroot()
 
     client1 = traceroot.initialize(api_key="key1", enabled=False)
     client2 = traceroot.initialize(api_key="key2", enabled=False)
 
-    assert traceroot.get_client() is client2
-    assert traceroot.get_client() is not client1
+    assert client2 is client1
+    assert traceroot.get_client() is client1
 
 
 def test_shutdown():

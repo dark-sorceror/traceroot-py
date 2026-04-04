@@ -8,44 +8,11 @@ HTTP transport to Traceroot is handled by TracerootJSONExporter.
 """
 
 import pytest
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 import traceroot
 from tests.utils import reset_traceroot
 from traceroot import observe
 from traceroot.span_attributes import SpanAttributes
-
-# Global exporter and provider for all tests
-# (OTel doesn't allow provider override)
-_test_exporter = InMemorySpanExporter()
-_test_provider = TracerProvider()
-_test_provider.add_span_processor(SimpleSpanProcessor(_test_exporter))
-_provider_set = False
-
-
-@pytest.fixture
-def memory_exporter():
-    """Set up InMemorySpanExporter for testing."""
-    global _provider_set
-
-    reset_traceroot()
-
-    # Set provider only once (OTel restriction)
-    if not _provider_set:
-        trace.set_tracer_provider(_test_provider)
-        _provider_set = True
-
-    # Clear any previous spans
-    _test_exporter.clear()
-
-    yield _test_exporter
-
-    # Clean up spans after test
-    _test_exporter.clear()
-    reset_traceroot()
 
 
 def get_spans_by_name(exporter):
