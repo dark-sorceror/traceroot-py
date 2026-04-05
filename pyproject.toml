@@ -8,7 +8,7 @@ license = {text = "Apache-2.0"}
 authors = [
     {name = "TraceRoot Team"},
 ]
-keywords = ["observability", "llm", "tracing", "openai", "anthropic"]
+keywords = ["observability", "llm", "tracing", "openai", "anthropic", "gemini"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -27,6 +27,7 @@ dependencies = [
     "openinference-instrumentation-openai>=0.1.40,<1.0",
     "openinference-instrumentation-anthropic>=1.0.0,<2.0",
     "openinference-instrumentation-langchain>=0.1.50,<1.0",
+    "openinference-instrumentation-google-genai>=0.1.14,<1.0",
 ]
 
 [dependency-groups]
