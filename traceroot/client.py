@@ -66,7 +66,7 @@ class TracerootClient:
             enabled: Whether tracing is enabled. Falls back
                 to TRACEROOT_ENABLED env var.
             integrations: Libraries to auto-instrument
-                (e.g. ["openai", "langchain"]).
+                (e.g. ["openai", "langchain", "crewai"]).
             git_repo: Repository in "owner/repo" format.
                 Falls back to TRACEROOT_GIT_REPO env var,
                 then auto-detected from git remote.
