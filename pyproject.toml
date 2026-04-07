@@ -28,6 +28,7 @@ dependencies = [
     "openinference-instrumentation-anthropic>=1.0.0,<2.0",
     "openinference-instrumentation-langchain>=0.1.50,<1.0",
     "openinference-instrumentation-google-genai>=0.1.14,<1.0",
+    "openinference-instrumentation-openai-agents>=0.1.0,<2.0",
 ]
 
 [dependency-groups]
