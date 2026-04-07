@@ -23,6 +23,7 @@ class Integration(StrEnum):
     LANGCHAIN = "langchain"
     GOOGLE_GENAI = "google_genai"
     OPENAI_AGENTS = "openai_agents"
+    CLAUDE_AGENT_SDK = "claude_agent_sdk"
 
 
 # Maps Integration enum ->
@@ -52,6 +53,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "openai-agents",
         "openinference.instrumentation.openai_agents",
         "OpenAIAgentsInstrumentor",
+    ),
+    Integration.CLAUDE_AGENT_SDK: (
+        "claude-agent-sdk",
+        "openinference.instrumentation.claude_agent_sdk",
+        "ClaudeAgentSDKInstrumentor",
     ),
 }
 
