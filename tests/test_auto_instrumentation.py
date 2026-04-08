@@ -22,6 +22,7 @@ def test_integration_enum_values():
     assert Integration.ANTHROPIC == "anthropic"
     assert Integration.LANGCHAIN == "langchain"
     assert Integration.GOOGLE_GENAI == "google_genai"
+    assert Integration.OPENAI_AGENTS == "openai_agents"
     assert Integration.CREWAI == "crewai"
 
 

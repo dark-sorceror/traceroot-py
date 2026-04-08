@@ -12,10 +12,8 @@ Basic Usage:
     def my_agent(query: str) -> str:
         return process(query)
 
-    # Auto-instrument frameworks such as LangChain or CrewAI
-    traceroot.initialize(
-        integrations=[Integration.LANGCHAIN, Integration.CREWAI]
-    )
+    # Auto-instrument LangChain
+    traceroot.initialize(integrations=[Integration.LANGCHAIN])
 
 Session Management:
     from openinference.instrumentation import using_attributes
@@ -74,8 +72,7 @@ def initialize(
         enabled: Whether tracing is enabled. Defaults to
             TRACEROOT_ENABLED env var, then True.
         integrations: Libraries to auto-instrument. Use Integration enum
-            values (e.g. [Integration.OPENAI, Integration.LANGCHAIN]
-            or [Integration.CREWAI]).
+            values (e.g. [Integration.OPENAI, Integration.LANGCHAIN]).
 
     Returns:
         The TracerootClient instance.
@@ -86,7 +83,6 @@ def initialize(
             integrations=[
                 Integration.OPENAI,
                 Integration.LANGCHAIN,
-                Integration.CREWAI,
             ]
         )
     """
