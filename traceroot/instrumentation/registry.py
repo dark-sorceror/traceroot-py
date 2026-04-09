@@ -112,7 +112,11 @@ def initialize_integrations(
             module = importlib.import_module(module_path)
             instrumentor_cls = getattr(module, class_name)
             instrumentor = instrumentor_cls()
-            instrumentor.instrument(tracer_provider=tracer_provider)
+
+            try:
+                instrumentor.instrument(tracer_provider=tracer_provider)
+            except TypeError:
+                instrumentor.instrument()
 
             logger.info(
                 "Instrumented %s via %s.%s",
