@@ -24,6 +24,7 @@ class Integration(StrEnum):
     GOOGLE_GENAI = "google_genai"
     OPENAI_AGENTS = "openai_agents"
     CLAUDE_AGENT_SDK = "claude_agent_sdk"
+    AUTOGEN = "autogen"
 
 
 # Maps Integration enum ->
@@ -58,6 +59,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "claude-agent-sdk",
         "openinference.instrumentation.claude_agent_sdk",
         "ClaudeAgentSDKInstrumentor",
+    ),
+    Integration.AUTOGEN: (
+        "ag2",
+        "openinference.instrumentation.autogen",
+        "AutogenInstrumentor",
     ),
 }
 
@@ -107,6 +113,7 @@ def initialize_integrations(
             instrumentor_cls = getattr(module, class_name)
             instrumentor = instrumentor_cls()
             instrumentor.instrument(tracer_provider=tracer_provider)
+
             logger.info(
                 "Instrumented %s via %s.%s",
                 library,
