@@ -113,12 +113,11 @@ def initialize_integrations(
             instrumentor_cls = getattr(module, class_name)
             instrumentor = instrumentor_cls()
 
-            try:
-                instrumentor.instrument(tracer_provider=tracer_provider)
-            except TypeError as exc:
-                if "tracer_provider" not in str(exc):
-                    raise
+            # AutoGen instrumentor (OpenInference) currently does not accept tracer_provider
+            if instrument is Integration.AUTOGEN:
                 instrumentor.instrument()
+            else:
+                instrumentor.instrument(tracer_provider=tracer_provider)
 
             logger.info(
                 "Instrumented %s via %s.%s",
