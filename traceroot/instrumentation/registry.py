@@ -115,7 +115,9 @@ def initialize_integrations(
 
             try:
                 instrumentor.instrument(tracer_provider=tracer_provider)
-            except TypeError:
+            except TypeError as exc:
+                if "tracer_provider" not in str(exc):
+                    raise
                 instrumentor.instrument()
 
             logger.info(
