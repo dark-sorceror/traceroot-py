@@ -114,6 +114,7 @@ def initialize_integrations(
             instrumentor = instrumentor_cls()
 
             # AutoGen instrumentor (OpenInference) currently does not accept tracer_provider
+            # https://github.com/Arize-ai/openinference/blob/main/python/instrumentation/openinference-instrumentation-autogen/src/openinference/instrumentation/autogen/__init__.py
             if instrument is Integration.AUTOGEN:
                 instrumentor.instrument()
             else:
