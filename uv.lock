@@ -348,6 +348,41 @@ wheels = [
 ]
 
 [[package]]
+name = "openinference-instrumentation-crewai"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "openinference-instrumentation" },
+    { name = "openinference-semantic-conventions" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
+    { name = "typing-extensions" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/71/25/d38642d5de0e6799b251aec465d3862e3994b073b2f714bee7b3e2ebf8ad/openinference_instrumentation_crewai-1.1.1.tar.gz", hash = "sha256:7aebb8e457400a24687e187f25c2ab4386bf3afaf865471989a416f586f311e1", size = 24982, upload-time = "2026-04-03T21:41:12.548Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/79/9b/c3a366b6846c6b0666fc27d9127fef94b57b835f0f3b25118e84818111fb/openinference_instrumentation_crewai-1.1.1-py3-none-any.whl", hash = "sha256:60e3c06b7c44e8338579eaa1f6b719719f8defe39c35107be2125b1678ef5a0a", size = 27876, upload-time = "2026-04-03T21:41:11.552Z" },
+]
+
+[[package]]
+name = "openinference-instrumentation-google-genai"
+version = "0.1.14"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "openinference-instrumentation" },
+    { name = "openinference-semantic-conventions" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/34/bd/3c16e84de1c59758b4295a93d927bfe1c57b0c50f0a86601ea49bf1d453e/openinference_instrumentation_google_genai-0.1.14.tar.gz", hash = "sha256:bcd58f80b669db01f82b83165ce73b3e9ef3a806a2f8f7145806ddbb3766bbc1", size = 128669, upload-time = "2026-03-24T18:23:26.695Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d9/d3/27ed875f043ae94216ea74fa729408daa9102f2ecd053af0b74d61cc03a6/openinference_instrumentation_google_genai-0.1.14-py3-none-any.whl", hash = "sha256:8459131f1817611d3186e245744c031297bd72618dda2d85358f4ecaa1d88442", size = 30884, upload-time = "2026-03-24T18:23:25.808Z" },
+]
+
+[[package]]
 name = "openinference-instrumentation-langchain"
 version = "0.1.61"
 source = { registry = "https://pypi.org/simple" }
@@ -380,6 +415,24 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f1/e4/cf114f6fedc90dde6e1d4062e55686542f8b7636a4d3340b81a49b1a09a8/openinference_instrumentation_openai-0.1.42.tar.gz", hash = "sha256:6f6b340292ab7dd7dc2e9a944958f7f812108efaafbfbcaa3f7ba205744ad1ce", size = 22839, upload-time = "2026-03-11T04:45:51.37Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c5/88/eaaa4840bf1ed8ff8c0927cd6ad5653ee0cfac14bfcb4e1e8f06fb0be9e8/openinference_instrumentation_openai-0.1.42-py3-none-any.whl", hash = "sha256:e7ff7b98612102d4a3e342842d3dd231709ff51abdc4b193e5df09e9afcfac0f", size = 30333, upload-time = "2026-03-11T04:45:48.535Z" },
+]
+
+[[package]]
+name = "openinference-instrumentation-openai-agents"
+version = "1.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "openinference-instrumentation" },
+    { name = "openinference-semantic-conventions" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
+    { name = "typing-extensions" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0f/95/9ace0fa5c1455f24b3c6e9c54ff7fbfab752abd66deccd3689f31d9200d3/openinference_instrumentation_openai_agents-1.4.1.tar.gz", hash = "sha256:145741867f809a04fa4640adc188e65e745ed9e3b306f811c3ecd994346f8cca", size = 12783, upload-time = "2026-04-03T21:21:26.042Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/5a/1e42244b23fba3d785f792fc2783264d3eae033eb785ec9fde260adf81d9/openinference_instrumentation_openai_agents-1.4.1-py3-none-any.whl", hash = "sha256:834c7cbaba2fdd3d2ce75967ef1d9f946e5f29aa8833d69c33d6fb2c85c65896", size = 14489, upload-time = "2026-04-03T21:21:24.892Z" },
 ]
 
 [[package]]
@@ -793,13 +846,16 @@ wheels = [
 
 [[package]]
 name = "traceroot"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "openinference-instrumentation" },
     { name = "openinference-instrumentation-anthropic" },
+    { name = "openinference-instrumentation-crewai" },
+    { name = "openinference-instrumentation-google-genai" },
     { name = "openinference-instrumentation-langchain" },
     { name = "openinference-instrumentation-openai" },
+    { name = "openinference-instrumentation-openai-agents" },
     { name = "opentelemetry-api" },
     { name = "opentelemetry-exporter-otlp-proto-http" },
     { name = "opentelemetry-sdk" },
@@ -818,13 +874,16 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "openinference-instrumentation", specifier = "==0.1.46" },
-    { name = "openinference-instrumentation-anthropic", specifier = "==1.0.0" },
-    { name = "openinference-instrumentation-langchain", specifier = "==0.1.61" },
-    { name = "openinference-instrumentation-openai", specifier = "==0.1.42" },
-    { name = "opentelemetry-api", specifier = "==1.40.0" },
-    { name = "opentelemetry-exporter-otlp-proto-http", specifier = "==1.40.0" },
-    { name = "opentelemetry-sdk", specifier = "==1.40.0" },
+    { name = "openinference-instrumentation", specifier = ">=0.1.40,<1.0" },
+    { name = "openinference-instrumentation-anthropic", specifier = ">=1.0.0,<2.0" },
+    { name = "openinference-instrumentation-crewai", specifier = ">=1.1.1,<2.0" },
+    { name = "openinference-instrumentation-google-genai", specifier = ">=0.1.14,<1.0" },
+    { name = "openinference-instrumentation-langchain", specifier = ">=0.1.50,<1.0" },
+    { name = "openinference-instrumentation-openai", specifier = ">=0.1.40,<1.0" },
+    { name = "openinference-instrumentation-openai-agents", specifier = ">=0.1.0,<2.0" },
+    { name = "opentelemetry-api", specifier = ">=1.35.0,<2.0" },
+    { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.35.0,<2.0" },
+    { name = "opentelemetry-sdk", specifier = ">=1.35.0,<2.0" },
     { name = "pydantic", specifier = ">=2.0,<3.0" },
 ]
 

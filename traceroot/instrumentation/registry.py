@@ -22,6 +22,7 @@ class Integration(StrEnum):
     ANTHROPIC = "anthropic"
     LANGCHAIN = "langchain"
     GOOGLE_GENAI = "google_genai"
+    CREWAI = "crewai"
     OPENAI_AGENTS = "openai_agents"
     CLAUDE_AGENT_SDK = "claude_agent_sdk"
     AUTOGEN = "autogen"
@@ -49,6 +50,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "google-genai",
         "openinference.instrumentation.google_genai",
         "GoogleGenAIInstrumentor",
+    ),
+    Integration.CREWAI: (
+        "crewai",
+        "openinference.instrumentation.crewai",
+        "CrewAIInstrumentor",
     ),
     Integration.OPENAI_AGENTS: (
         "openai-agents",
