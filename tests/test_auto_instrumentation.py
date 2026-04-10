@@ -229,3 +229,50 @@ def test_client_skips_instrumentation_when_disabled():
     with patch("traceroot.instrumentation.registry.initialize_integrations") as mock_init:
         traceroot.initialize(enabled=False, integrations=[Integration.OPENAI])
         mock_init.assert_not_called()
+        
+
+# =============================================================================
+# Agno integration
+# =============================================================================
+
+
+def test_agno_integration_enum_value():
+    assert Integration.AGNO == "agno"
+
+
+@patch("traceroot.instrumentation.registry._is_package_installed")
+def test_agno_integration_uses_agno_instrumentor(mock_installed):
+    mock_installed.return_value = True
+    mock_instrumentor = MagicMock()
+    mock_cls = MagicMock(return_value=mock_instrumentor)
+    mock_module = MagicMock()
+    mock_module.AgnoInstrumentor = mock_cls
+
+    provider = TracerProvider()
+
+    with patch("importlib.import_module", return_value=mock_module):
+        result = initialize_integrations(
+            tracer_provider=provider,
+            integrations=[Integration.AGNO],
+        )
+
+    assert result == [Integration.AGNO]
+    mock_instrumentor.instrument.assert_called_once_with(tracer_provider=provider)
+
+
+@patch("traceroot.instrumentation.registry._is_package_installed")
+def test_agno_missing_warns_and_skips(mock_installed, caplog):
+    import logging
+
+    mock_installed.return_value = False
+
+    provider = TracerProvider()
+    with caplog.at_level(logging.WARNING, logger="traceroot.instrumentation.registry"):
+        result = initialize_integrations(
+            tracer_provider=provider,
+            integrations=[Integration.AGNO],
+        )
+
+    assert result == []
+    assert "skipping" in caplog.text
+    assert "agno" in caplog.text

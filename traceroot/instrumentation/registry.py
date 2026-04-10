@@ -26,6 +26,7 @@ class Integration(StrEnum):
     OPENAI_AGENTS = "openai_agents"
     CLAUDE_AGENT_SDK = "claude_agent_sdk"
     AUTOGEN = "autogen"
+    AGNO = "agno"
 
 
 # Maps Integration enum ->
@@ -70,6 +71,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "ag2",
         "openinference.instrumentation.autogen",
         "AutogenInstrumentor",
+    ),
+    Integration.AGNO: (
+        "agno",
+        "openinference.instrumentation.agno",
+        "AgnoInstrumentor",
     ),
 }
 
