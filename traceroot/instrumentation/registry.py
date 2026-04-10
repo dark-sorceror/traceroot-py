@@ -24,6 +24,7 @@ class Integration(StrEnum):
     GOOGLE_GENAI = "google_genai"
     OPENAI_AGENTS = "openai_agents"
     CLAUDE_AGENT_SDK = "claude_agent_sdk"
+    AUTOGEN = "autogen"
 
 
 # Maps Integration enum ->
@@ -58,6 +59,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "claude-agent-sdk",
         "openinference.instrumentation.claude_agent_sdk",
         "ClaudeAgentSDKInstrumentor",
+    ),
+    Integration.AUTOGEN: (
+        "ag2",
+        "openinference.instrumentation.autogen",
+        "AutogenInstrumentor",
     ),
 }
 
@@ -106,7 +112,14 @@ def initialize_integrations(
             module = importlib.import_module(module_path)
             instrumentor_cls = getattr(module, class_name)
             instrumentor = instrumentor_cls()
-            instrumentor.instrument(tracer_provider=tracer_provider)
+
+            # AutoGen instrumentor (OpenInference) currently does not accept tracer_provider
+            # https://github.com/Arize-ai/openinference/blob/main/python/instrumentation/openinference-instrumentation-autogen/src/openinference/instrumentation/autogen/__init__.py
+            if instrument is Integration.AUTOGEN:
+                instrumentor.instrument()
+            else:
+                instrumentor.instrument(tracer_provider=tracer_provider)
+
             logger.info(
                 "Instrumented %s via %s.%s",
                 library,
