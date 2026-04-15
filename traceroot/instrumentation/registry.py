@@ -25,6 +25,7 @@ class Integration(StrEnum):
     CREWAI = "crewai"
     OPENAI_AGENTS = "openai_agents"
     CLAUDE_AGENT_SDK = "claude_agent_sdk"
+    LLAMA_INDEX = "llama_index"
     AUTOGEN = "autogen"
 
 
@@ -65,6 +66,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "claude-agent-sdk",
         "openinference.instrumentation.claude_agent_sdk",
         "ClaudeAgentSDKInstrumentor",
+    ),
+    Integration.LLAMA_INDEX: (
+        "llama-index-core",
+        "openinference.instrumentation.llama_index",
+        "LlamaIndexInstrumentor",
     ),
     Integration.AUTOGEN: (
         "ag2",
