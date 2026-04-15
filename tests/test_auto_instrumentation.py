@@ -24,6 +24,7 @@ def test_integration_enum_values():
     assert Integration.GOOGLE_GENAI == "google_genai"
     assert Integration.OPENAI_AGENTS == "openai_agents"
     assert Integration.CREWAI == "crewai"
+    assert Integration.LLAMA_INDEX == "llama_index"
 
 
 def test_integration_exported_from_traceroot():
@@ -174,6 +175,75 @@ def test_crewai_can_be_requested_with_other_integrations(mock_installed):
         )
 
     assert result == [Integration.OPENAI, Integration.CREWAI]
+
+
+# =============================================================================
+# LlamaIndex integration
+# =============================================================================
+
+
+@patch("traceroot.instrumentation.registry._is_package_installed")
+def test_llamaindex_integration_uses_llamaindex_instrumentor(mock_installed):
+    mock_installed.return_value = True
+    mock_instrumentor = MagicMock()
+    mock_cls = MagicMock(return_value=mock_instrumentor)
+    mock_module = MagicMock()
+    mock_module.LlamaIndexInstrumentor = mock_cls
+
+    provider = TracerProvider()
+
+    with patch("importlib.import_module", return_value=mock_module):
+        result = initialize_integrations(
+            tracer_provider=provider,
+            integrations=[Integration.LLAMA_INDEX],
+        )
+
+    assert result == [Integration.LLAMA_INDEX]
+    mock_cls.assert_called_once()
+    mock_instrumentor.instrument.assert_called_once_with(tracer_provider=provider)
+
+
+@patch("traceroot.instrumentation.registry._is_package_installed")
+def test_llamaindex_missing_warns_and_skips(mock_installed, caplog):
+    import logging
+
+    mock_installed.return_value = False
+
+    provider = TracerProvider()
+    with caplog.at_level(logging.WARNING, logger="traceroot.instrumentation.registry"):
+        result = initialize_integrations(
+            tracer_provider=provider,
+            integrations=[Integration.LLAMA_INDEX],
+        )
+
+    assert result == []
+    assert "skipping" in caplog.text
+    assert "llama-index-core" in caplog.text
+
+
+@patch("traceroot.instrumentation.registry._is_package_installed")
+def test_llamaindex_can_be_requested_with_other_integrations(mock_installed):
+    mock_installed.return_value = True
+
+    def import_module(name):
+        module = MagicMock()
+        if name == "openinference.instrumentation.llama_index":
+            module.LlamaIndexInstrumentor = MagicMock(return_value=MagicMock())
+        elif name == "openinference.instrumentation.openai":
+            module.OpenAIInstrumentor = MagicMock(return_value=MagicMock())
+        else:
+            raise AssertionError(f"unexpected module import: {name}")
+        return module
+
+    provider = TracerProvider()
+
+    with patch("importlib.import_module", side_effect=import_module):
+        result = initialize_integrations(
+            tracer_provider=provider,
+            integrations=[Integration.OPENAI, Integration.LLAMA_INDEX],
+        )
+
+    assert result == [Integration.OPENAI, Integration.LLAMA_INDEX]
 
 
 @patch("traceroot.instrumentation.registry._is_package_installed")
