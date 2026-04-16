@@ -299,7 +299,7 @@ def test_client_skips_instrumentation_when_disabled():
     with patch("traceroot.instrumentation.registry.initialize_integrations") as mock_init:
         traceroot.initialize(enabled=False, integrations=[Integration.OPENAI])
         mock_init.assert_not_called()
-        
+
 
 # =============================================================================
 # Agno integration
