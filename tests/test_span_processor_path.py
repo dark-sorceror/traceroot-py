@@ -1,6 +1,6 @@
 """Tests for TracerootSpanProcessor path and ids_path tracking.
 
-Mirrors the TypeScript processor.test.ts coverage:
+Covers:
   - traceroot.span.path set correctly for root / child / deeply nested spans
   - traceroot.span.ids_path set correctly at every depth
   - Map-based ancestry lets children inherit full paths even when the parent is
@@ -272,7 +272,7 @@ def test_sdk_attributes_present_on_every_span_in_hierarchy(proc_setup):
 #
 # When span.is_recording() is False the processor must early-exit: no SDK
 # attributes, no path attributes, and no entries added to the internal maps.
-# This mirrors how the OTel spec says processors should behave for dropped spans.
+# Per the OTel spec, processors must early-exit for non-recording spans.
 
 
 def test_non_recording_span_not_added_to_map(proc_setup):
