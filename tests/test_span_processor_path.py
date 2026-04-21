@@ -205,10 +205,10 @@ def test_multiple_remote_children_of_same_parent_all_get_correct_ancestry(proc_s
 
 # ── Map memory / eviction ─────────────────────────────────────────────────────
 #
-# Entries are NOT evicted on span end — the map uses a bounded OrderedDict
-# (capacity _PATH_MAP_MAX) that evicts the oldest entry only when full.
-# This eliminates the on_end race where a parent was removed before a
-# concurrent sibling's on_start could look it up.
+# Entries are evicted in on_end (under RLock) to keep memory low. A bounded
+# OrderedDict (capacity _PATH_MAP_MAX) acts as a second safety net: if on_end
+# fires before a concurrent sibling's on_start, the oldest entry is evicted
+# at capacity rather than allowing unbounded growth.
 
 
 def test_map_entries_removed_after_span_ends(proc_setup):
