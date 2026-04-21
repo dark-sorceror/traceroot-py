@@ -6,6 +6,7 @@ OpenTelemetry's BatchSpanProcessor with Traceroot-specific configuration.
 
 import logging
 import os
+import threading
 from collections import OrderedDict
 
 from opentelemetry import trace as otel_trace
@@ -114,6 +115,7 @@ class TracerootSpanProcessor(BatchSpanProcessor):
 
         self._flush_at = flush_at
         self._flush_interval = flush_interval
+        self._paths_lock = threading.RLock()
         # Bounded OrderedDict: evicts oldest entry when capacity is exceeded,
         # eliminating the on_end race where a parent was removed before a
         # concurrent sibling's on_start could look it up.
@@ -136,63 +138,74 @@ class TracerootSpanProcessor(BatchSpanProcessor):
                     else None
                 )
 
-                # Prefer the in-process map: OpenInference creates LangGraph node
-                # spans with a remote/NonRecordingSpan parent that carries no
-                # attributes, so reading parent_span.attributes would give None
-                # and break the ancestry chain.
-                parent_ids_path: list | None = (
-                    self._ids_path_by_span_id.get(parent_id_hex) if parent_id_hex else None
-                )
-                parent_path: list | None = (
-                    self._name_path_by_span_id.get(parent_id_hex) if parent_id_hex else None
-                )
-
-                # Fall back to reading from the active parent span's attributes.
-                if parent_ids_path is None or parent_path is None:
-                    if parent_context is not None:
-                        parent_span = otel_trace.get_current_span(parent_context)
-                    else:
-                        parent_span = otel_trace.get_current_span()
-
-                    attrs = getattr(parent_span, "attributes", None)
-                    if attrs is not None:
-                        raw_path = attrs.get("traceroot.span.path")
-                        if raw_path is not None:
-                            parent_path = list(raw_path)
-                        raw_ids = attrs.get("traceroot.span.ids_path")
-                        if raw_ids is not None:
-                            parent_ids_path = list(raw_ids)
-
-                span_name = getattr(span, "name", "") or ""
-
-                # path: [root_name, ..., current_name]
-                span_path = (parent_path + [span_name]) if parent_path is not None else [span_name]
-                span.set_attribute("traceroot.span.path", span_path)
-
-                # ids_path: [root_id, ..., direct_parent_id]
-                if parent_id_hex:
-                    span_ids_path = (
-                        parent_ids_path + [parent_id_hex]
-                        if parent_ids_path is not None
-                        else [parent_id_hex]
+                with self._paths_lock:
+                    # Prefer the in-process map: OpenInference creates LangGraph node
+                    # spans with a remote/NonRecordingSpan parent that carries no
+                    # attributes, so reading parent_span.attributes would give None
+                    # and break the ancestry chain.
+                    parent_ids_path: list | None = (
+                        self._ids_path_by_span_id.get(parent_id_hex) if parent_id_hex else None
                     )
-                else:
-                    span_ids_path = []
-                span.set_attribute("traceroot.span.ids_path", span_ids_path)
+                    parent_path: list | None = (
+                        self._name_path_by_span_id.get(parent_id_hex) if parent_id_hex else None
+                    )
 
-                # Store in map so descendant spans can inherit via lookup.
-                # Evict the oldest entry if we're at capacity.
-                span_id_hex = format(span.context.span_id, "016x")
-                if len(self._ids_path_by_span_id) >= _PATH_MAP_MAX:
-                    self._ids_path_by_span_id.popitem(last=False)
-                    self._name_path_by_span_id.popitem(last=False)
-                self._ids_path_by_span_id[span_id_hex] = span_ids_path
-                self._name_path_by_span_id[span_id_hex] = span_path
+                    # Fall back to reading from the active parent span's attributes.
+                    if parent_ids_path is None or parent_path is None:
+                        if parent_context is not None:
+                            parent_span = otel_trace.get_current_span(parent_context)
+                        else:
+                            parent_span = otel_trace.get_current_span()
+
+                        attrs = getattr(parent_span, "attributes", None)
+                        if attrs is not None:
+                            raw_path = attrs.get("traceroot.span.path")
+                            if raw_path is not None:
+                                parent_path = list(raw_path)
+                            raw_ids = attrs.get("traceroot.span.ids_path")
+                            if raw_ids is not None:
+                                parent_ids_path = list(raw_ids)
+
+                    span_name = getattr(span, "name", "") or ""
+
+                    # path: [root_name, ..., current_name]
+                    span_path = (
+                        (parent_path + [span_name]) if parent_path is not None else [span_name]
+                    )
+
+                    # ids_path: [root_id, ..., direct_parent_id]
+                    if parent_id_hex:
+                        span_ids_path = (
+                            parent_ids_path + [parent_id_hex]
+                            if parent_ids_path is not None
+                            else [parent_id_hex]
+                        )
+                    else:
+                        span_ids_path = []
+
+                    # Store in map so descendant spans can inherit via lookup.
+                    # Evict the oldest entry if we're at capacity.
+                    span_id_hex = format(span.context.span_id, "016x")
+                    if len(self._ids_path_by_span_id) >= _PATH_MAP_MAX:
+                        self._ids_path_by_span_id.popitem(last=False)
+                        self._name_path_by_span_id.popitem(last=False)
+                    self._ids_path_by_span_id[span_id_hex] = span_ids_path
+                    self._name_path_by_span_id[span_id_hex] = span_path
+
+                span.set_attribute("traceroot.span.path", span_path)
+                span.set_attribute("traceroot.span.ids_path", span_ids_path)
 
             except Exception as exc:
                 logger.debug("TracerootSpanProcessor: failed to set path attributes: %s", exc)
 
         super().on_start(span, parent_context)
+
+    def on_end(self, span):
+        with self._paths_lock:
+            span_id_hex = format(span.context.span_id, "016x")
+            self._ids_path_by_span_id.pop(span_id_hex, None)
+            self._name_path_by_span_id.pop(span_id_hex, None)
+        super().on_end(span)
 
     @property
     def flush_at(self) -> int:

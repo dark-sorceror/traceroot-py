@@ -203,7 +203,12 @@ def test_multiple_remote_children_of_same_parent_all_get_correct_ancestry(proc_s
     assert _ids(finished["child2"]) == [root_id, mid_id]
 
 
-# ── Map cleanup (memory) ───────────────────────────────────────────────────────
+# ── Map memory / eviction ─────────────────────────────────────────────────────
+#
+# Entries are NOT evicted on span end — the map uses a bounded OrderedDict
+# (capacity _PATH_MAP_MAX) that evicts the oldest entry only when full.
+# This eliminates the on_end race where a parent was removed before a
+# concurrent sibling's on_start could look it up.
 
 
 def test_map_entries_removed_after_span_ends(proc_setup):
@@ -212,7 +217,6 @@ def test_map_entries_removed_after_span_ends(proc_setup):
         root_hex = _hex(root.context.span_id)
         assert root_hex in processor._ids_path_by_span_id
 
-    # After the context manager exits, on_end has been called.
     assert root_hex not in processor._ids_path_by_span_id
     assert root_hex not in processor._name_path_by_span_id
 
@@ -225,13 +229,37 @@ def test_map_cleaned_up_for_all_spans_in_hierarchy(proc_setup):
     ):
         root_hex = _hex(root.context.span_id)
         child_hex = _hex(child.context.span_id)
-        # Both present while spans are live
         assert root_hex in processor._ids_path_by_span_id
         assert child_hex in processor._ids_path_by_span_id
 
-    # Both removed after both spans end
     assert root_hex not in processor._ids_path_by_span_id
     assert child_hex not in processor._ids_path_by_span_id
+
+
+def test_map_bounded_eviction_at_capacity(proc_setup):
+    from traceroot.transport.span_processor import _PATH_MAP_MAX
+
+    _, _, processor = proc_setup
+    # Fill map to capacity by directly inserting entries.
+    for i in range(_PATH_MAP_MAX):
+        key = format(i, "016x")
+        processor._ids_path_by_span_id[key] = []
+        processor._name_path_by_span_id[key] = []
+
+    first_key = format(0, "016x")
+    assert first_key in processor._ids_path_by_span_id
+
+    # One more insertion should evict the oldest (first) entry.
+    overflow_key = format(_PATH_MAP_MAX, "016x")
+    if len(processor._ids_path_by_span_id) >= _PATH_MAP_MAX:
+        processor._ids_path_by_span_id.popitem(last=False)
+        processor._name_path_by_span_id.popitem(last=False)
+    processor._ids_path_by_span_id[overflow_key] = []
+    processor._name_path_by_span_id[overflow_key] = []
+
+    assert first_key not in processor._ids_path_by_span_id
+    assert overflow_key in processor._ids_path_by_span_id
+    assert len(processor._ids_path_by_span_id) == _PATH_MAP_MAX
 
 
 # ── SDK attributes ─────────────────────────────────────────────────────────────
