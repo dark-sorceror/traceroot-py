@@ -4,8 +4,11 @@ This module defines the TracerootSpanProcessor class, which extends
 OpenTelemetry's BatchSpanProcessor with Traceroot-specific configuration.
 """
 
+import logging
 import os
+from collections import OrderedDict
 
+from opentelemetry import trace as otel_trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import (
     Compression,
     OTLPSpanExporter,
@@ -24,6 +27,11 @@ from traceroot.env import (
     TRACEROOT_FLUSH_INTERVAL,
     TRACEROOT_TIMEOUT,
 )
+
+logger = logging.getLogger(__name__)
+
+_PATH_MAP_MAX: int = 1024
+_PathMap = OrderedDict[str, list[str]]
 
 
 class TracerootSpanProcessor(BatchSpanProcessor):
@@ -106,11 +114,11 @@ class TracerootSpanProcessor(BatchSpanProcessor):
 
         self._flush_at = flush_at
         self._flush_interval = flush_interval
-        # Keyed by span_id hex string. Allows descendant spans to inherit full
-        # ancestry even when the parent is a NonRecordingSpan with no attributes
-        # — the same remote-context pattern OpenInference uses for LangGraph nodes.
-        self._ids_path_by_span_id: dict[str, list[str]] = {}
-        self._name_path_by_span_id: dict[str, list[str]] = {}
+        # Bounded OrderedDict: evicts oldest entry when capacity is exceeded,
+        # eliminating the on_end race where a parent was removed before a
+        # concurrent sibling's on_start could look it up.
+        self._ids_path_by_span_id: _PathMap = OrderedDict()
+        self._name_path_by_span_id: _PathMap = OrderedDict()
 
     def on_start(self, span, parent_context=None):
         if span.is_recording():
@@ -118,8 +126,6 @@ class TracerootSpanProcessor(BatchSpanProcessor):
             span.set_attribute("traceroot.sdk.version", SDK_VERSION)
 
             try:
-                from opentelemetry import trace as otel_trace
-
                 # span.parent is the SpanContext of the parent (set by the SDK at
                 # creation time from the active context). It is always correct even
                 # when the parent is a remote/NonRecordingSpan with no attributes.
@@ -175,23 +181,18 @@ class TracerootSpanProcessor(BatchSpanProcessor):
                 span.set_attribute("traceroot.span.ids_path", span_ids_path)
 
                 # Store in map so descendant spans can inherit via lookup.
+                # Evict the oldest entry if we're at capacity.
                 span_id_hex = format(span.context.span_id, "016x")
+                if len(self._ids_path_by_span_id) >= _PATH_MAP_MAX:
+                    self._ids_path_by_span_id.popitem(last=False)
+                    self._name_path_by_span_id.popitem(last=False)
                 self._ids_path_by_span_id[span_id_hex] = span_ids_path
                 self._name_path_by_span_id[span_id_hex] = span_path
 
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("TracerootSpanProcessor: failed to set path attributes: %s", exc)
 
         super().on_start(span, parent_context)
-
-    def on_end(self, span):
-        try:
-            span_id_hex = format(span.context.span_id, "016x")
-            self._ids_path_by_span_id.pop(span_id_hex, None)
-            self._name_path_by_span_id.pop(span_id_hex, None)
-        except Exception:
-            pass
-        super().on_end(span)
 
     @property
     def flush_at(self) -> int:
