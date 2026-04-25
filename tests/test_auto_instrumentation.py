@@ -393,4 +393,3 @@ def test_groq_missing_warns_and_skips(mock_installed, caplog):
     assert result == []
     assert "skipping" in caplog.text
     assert "groq" in caplog.text
-    
