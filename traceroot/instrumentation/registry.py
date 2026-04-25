@@ -28,7 +28,7 @@ class Integration(StrEnum):
     LLAMA_INDEX = "llama_index"
     AUTOGEN = "autogen"
     AGNO = "agno"
-    GROQ = "groq" 
+    GROQ = "groq"
 
 
 # Maps Integration enum ->
