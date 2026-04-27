@@ -25,6 +25,7 @@ def test_integration_enum_values():
     assert Integration.OPENAI_AGENTS == "openai_agents"
     assert Integration.CREWAI == "crewai"
     assert Integration.LLAMA_INDEX == "llama_index"
+    assert Integration.DSPY == "dspy"
 
 
 def test_integration_exported_from_traceroot():
@@ -393,3 +394,50 @@ def test_groq_missing_warns_and_skips(mock_installed, caplog):
     assert result == []
     assert "skipping" in caplog.text
     assert "groq" in caplog.text
+
+
+# =============================================================================
+# DSPy integration
+# =============================================================================
+
+
+def test_dspy_integration_enum_value():
+    assert Integration.DSPY == "dspy"
+
+
+@patch("traceroot.instrumentation.registry._is_package_installed")
+def test_dspy_integration_uses_dspy_instrumentor(mock_installed):
+    mock_installed.return_value = True
+    mock_instrumentor = MagicMock()
+    mock_cls = MagicMock(return_value=mock_instrumentor)
+    mock_module = MagicMock()
+    mock_module.DSPyInstrumentor = mock_cls
+
+    provider = TracerProvider()
+
+    with patch("importlib.import_module", return_value=mock_module):
+        result = initialize_integrations(
+            tracer_provider=provider,
+            integrations=[Integration.DSPY],
+        )
+
+    assert result == [Integration.DSPY]
+    mock_instrumentor.instrument.assert_called_once_with(tracer_provider=provider)
+
+
+@patch("traceroot.instrumentation.registry._is_package_installed")
+def test_dspy_missing_warns_and_skips(mock_installed, caplog):
+    import logging
+
+    mock_installed.return_value = False
+
+    provider = TracerProvider()
+    with caplog.at_level(logging.WARNING, logger="traceroot.instrumentation.registry"):
+        result = initialize_integrations(
+            tracer_provider=provider,
+            integrations=[Integration.DSPY],
+        )
+
+    assert result == []
+    assert "skipping" in caplog.text
+    assert "dspy" in caplog.text

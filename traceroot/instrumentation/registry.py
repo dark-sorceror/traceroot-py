@@ -29,6 +29,7 @@ class Integration(StrEnum):
     AUTOGEN = "autogen"
     AGNO = "agno"
     GROQ = "groq"
+    DSPY = "dspy"
 
 
 # Maps Integration enum ->
@@ -88,6 +89,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "groq",
         "openinference.instrumentation.groq",
         "GroqInstrumentor",
+    ),
+    Integration.DSPY: (
+        "dspy",
+        "openinference.instrumentation.dspy",
+        "DSPyInstrumentor",
     ),
 }
 
