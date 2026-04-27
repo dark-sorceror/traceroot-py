@@ -98,6 +98,16 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
 }
 
 
+# Per-integration install hints used in the "skipping ..." warning.
+# Defaults to ``pip install <library>`` (which is correct for every integration
+# whose OpenInference wrapper ships in ``[project] dependencies``). Override
+# here for opt-in integrations whose wrapper lives behind an extras marker —
+# for those, just installing the library would still leave the wrapper missing.
+_INSTALL_HINTS: dict[Integration, str] = {
+    Integration.DSPY: "pip install traceroot[dspy]",
+}
+
+
 def _is_package_installed(package_name: str) -> bool:
     """Check if a Python package is installed."""
     try:
@@ -129,12 +139,12 @@ def initialize_integrations(
         library, module_path, class_name = _BUILTIN_REGISTRY[instrument]
 
         if not _is_package_installed(library):
+            install_hint = _INSTALL_HINTS.get(instrument, f"pip install {library}")
             logger.warning(
-                "traceroot: skipping %s integration — '%s' is not installed. "
-                "Install it with: pip install %s",
+                "traceroot: skipping %s integration — '%s' is not installed. Install it with: %s",
                 instrument.value,
                 library,
-                library,
+                install_hint,
             )
             continue
 
