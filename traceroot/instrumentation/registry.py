@@ -30,6 +30,7 @@ class Integration(StrEnum):
     AGNO = "agno"
     GROQ = "groq"
     DSPY = "dspy"
+    GOOGLE_ADK = "google_adk"
 
 
 # Maps Integration enum ->
@@ -94,6 +95,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "dspy",
         "openinference.instrumentation.dspy",
         "DSPyInstrumentor",
+    ),
+    Integration.GOOGLE_ADK: (
+        "google-adk",
+        "openinference.instrumentation.google_adk",
+        "GoogleADKInstrumentor",
     ),
 }
 
