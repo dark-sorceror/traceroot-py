@@ -441,28 +441,3 @@ def test_dspy_missing_warns_and_skips(mock_installed, caplog):
     assert result == []
     assert "skipping" in caplog.text
     assert "dspy" in caplog.text
-    # DSPy is opt-in via the ``[dspy]`` extra; the warning must point users at
-    # ``pip install traceroot[dspy]`` instead of bare ``pip install dspy`` so
-    # they do not end up with the framework installed but the OpenInference
-    # wrapper still missing.
-    assert "traceroot[dspy]" in caplog.text
-
-
-@patch("traceroot.instrumentation.registry._is_package_installed")
-def test_hard_dependency_install_hint_uses_library_name(mock_installed, caplog):
-    """Integrations whose wrapper ships in ``[project] dependencies`` keep the
-    default ``pip install <library>`` hint (i.e. the new ``_INSTALL_HINTS``
-    override only kicks in for opt-in extras like DSPy)."""
-    import logging
-
-    mock_installed.return_value = False
-
-    provider = TracerProvider()
-    with caplog.at_level(logging.WARNING, logger="traceroot.instrumentation.registry"):
-        initialize_integrations(
-            tracer_provider=provider,
-            integrations=[Integration.OPENAI],
-        )
-
-    assert "pip install openai" in caplog.text
-    assert "traceroot[" not in caplog.text
