@@ -28,6 +28,7 @@ class Integration(StrEnum):
     LLAMA_INDEX = "llama_index"
     AUTOGEN = "autogen"
     AGNO = "agno"
+    GROQ = "groq"
 
 
 # Maps Integration enum ->
@@ -82,6 +83,11 @@ _BUILTIN_REGISTRY: dict[Integration, tuple[str, str, str]] = {
         "agno",
         "openinference.instrumentation.agno",
         "AgnoInstrumentor",
+    ),
+    Integration.GROQ: (
+        "groq",
+        "openinference.instrumentation.groq",
+        "GroqInstrumentor",
     ),
 }
 
